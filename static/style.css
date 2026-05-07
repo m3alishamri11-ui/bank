@@ -408,3 +408,15 @@ textarea:focus {
 html[dir="ltr"] body {
     font-family: 'Poppins', sans-serif;
 }
+/* 🌟 إضافة خاصة لزر تسجيل الخروج عشان ما يطير فوق */
+    .menu-item.logout-btn {
+        color: #EE5D50; /* نخليه باللون الأحمر لتمييزه */
+        margin-top: 0; /* نتأكد إنه مو مرفوع للأعلى */
+        border: none;
+    }
+
+    /* نتأكد إن الشريط السفلي يستوعب كل الأزرار بجنب بعض */
+    .sidebar {
+        gap: 5px; 
+        padding: 5px;
+    }
