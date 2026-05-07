@@ -52,10 +52,10 @@
         </div>
 
         <!-- 🌟 تعليق: زر "تسجيل الخروج"، مرتبط بمسار /logout في الباك إند (app.py) لإنهاء الجلسة -->
-        <a href="{{ url_for('logout') }}" class="menu-item" style="color: #EE5D50; text-decoration: none; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 20px; padding-top: 20px;">
-            <i class="fas fa-sign-out-alt"></i>
-            <span id="txt_logout" style="font-weight: bold;">تسجيل الخروج</span>
-        </a>
+         <a href="{{ url_for('logout') }}" class="menu-item logout-item">
+    <i class="fas fa-sign-out-alt"></i>
+    <span id="txt_logout">تسجيل الخروج</span>
+</a>
     </div>
 
     <!-- 🌟 تعليق: بداية قسم المحتوى الرئيسي للصفحة (بجانب القائمة الجانبية) -->
