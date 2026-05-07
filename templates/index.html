@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<!-- 🌟 تعليق: هذا السطر يحدد لغة الصفحة (عربي)، واتجاه النص (يمين لليسار)، ويفعل الوضع المظلم (Dark Mode) -->
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+    <!-- 🌟 تعليق: لدعم اللغة العربية والرموز الخاصة بدون ظهور حروف غريبة -->
+    <meta charset="UTF-8">
+    <!-- 🌟 تعليق: لجعل الموقع متجاوباً ويتناسب مع شاشات الجوال والكمبيوتر -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 🌟 تعليق: عنوان الصفحة الذي يظهر في علامة التبويب (Tab) أعلى المتصفح -->
+    <title>Fraud Detection System</title>
+    
+    <!-- 🌟 تعليق: استدعاء خطوط جميلة (Cairo و Poppins) من موقع جوجل للخطوط -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- 🌟 تعليق: استدعاء مكتبة Font Awesome لعرض الأيقونات (مثل أيقونة البيت، الإعدادات، الخ) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- 🌟 تعليق: استدعاء مكتبة SweetAlert2 لعمل نوافذ التنبيهات الجميلة والمنبثقة -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- 🌟 تعليق: استدعاء مكتبة Chart.js لرسم المخطط البياني في لوحة التحكم -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- 🌟 تعليق: ربط صفحة الـ HTML هذه بملف التصميم والألوان (style.css) باستخدام كود Jinja الخاص بـ Flask -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body> 
+
+    <!-- 🌟 تعليق: بداية قسم القائمة الجانبية (Sidebar) التي تظهر على يمين الشاشة -->
+    <div class="sidebar">
+        <!-- 🌟 تعليق: جزء الشعار (أيقونة الدرع + اسم البنك) -->
+        <div class="logo">
+            <i class="fas fa-shield-alt"></i>
+            <span id="txt_logo">بنك الأمان</span>
+        </div>
+        
+        <!-- 🌟 تعليق: زر "الرئيسية" في القائمة، عند الضغط عليه ينفذ دالة switchPage للانتقال للوحة التحكم -->
+        <div class="menu-item active" onclick="switchPage('dashboard', this)">
+            <i class="fas fa-home"></i>
+            <span id="txt_dashboard">الرئيسية</span>
+        </div>
+        
+        <!-- 🌟 تعليق: زر "السجل" لعرض العمليات السابقة -->
+        <div class="menu-item" onclick="switchPage('history', this)">
+            <i class="fas fa-history"></i>
+            <span id="txt_history">السجل</span>
+        </div>
+        
+        <!-- 🌟 تعليق: زر "الإعدادات" -->
+        <div class="menu-item" onclick="switchPage('settings', this)">
+            <i class="fas fa-cog"></i>
+            <span id="txt_settings">الإعدادات</span>
+        </div>
+
+        <!-- 🌟 تعليق: زر "تسجيل الخروج"، مرتبط بمسار /logout في الباك إند (app.py) لإنهاء الجلسة -->
+        <a href="{{ url_for('logout') }}" class="menu-item" style="color: #EE5D50; text-decoration: none; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 20px; padding-top: 20px;">
+            <i class="fas fa-sign-out-alt"></i>
+            <span id="txt_logout" style="font-weight: bold;">تسجيل الخروج</span>
+        </a>
+    </div>
+
+    <!-- 🌟 تعليق: بداية قسم المحتوى الرئيسي للصفحة (بجانب القائمة الجانبية) -->
+    <div class="main-content">
+        
+        <!-- 🌟 تعليق: الشريط العلوي (Header) يحتوي على العنوان الرئيسي للموقع -->
+        <div class="header">
+            <div class="page-title">
+                <h2 style="color: var(--text-sec); margin:0;" id="txt_subtitle">لوحة التحكم</h2>
+                <h1 style="margin: 5px 0 0;" id="txt_title">كشف الاحتيال الذكي</h1>
+            </div>
+            
+            <!-- 🌟 تعليق: أزرار التحكم الموجودة في أعلى اليسار -->
+            <div class="header-actions">
+                <!-- 🌟 تعليق: زر التبديل بين الوضع الليلي (Dark) والنهاري (Light) -->
+                <button class="icon-btn" onclick="toggleTheme()">
+                    <i id="theme-icon" class="fas fa-sun"></i>
+                </button>
+                <!-- 🌟 تعليق: زر تبديل لغة الموقع بين العربية والإنجليزية -->
+                <button class="lang-btn" onclick="toggleLanguage()">
+                    <i class="fas fa-globe"></i>
+                    <span id="txt_lang">English</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 🌟 تعليق: ===================== صفحة لوحة التحكم (Dashboard) ===================== -->
+        <!-- 🌟 تعليق: هذه الصفحة هي التي تظهر افتراضياً (active-view) -->
+        <div id="dashboard-page" class="page-section active-view">
+            <!-- 🌟 تعليق: شبكة الإحصائيات (المربعات الثلاثة العلوية) -->
+            <div class="stats-grid">
+                <!-- 🌟 تعليق: المربع الأول: لعرض إجمالي عدد العمليات -->
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-chart-bar"></i></div>
+                    <div>
+                        <h4 style="margin:0; color:var(--text-sec)" id="txt_stat1">إجمالي العمليات</h4>
+                        <h2 style="margin:0" id="val_total">0</h2> 
+                    </div>
+                </div>
+                <!-- 🌟 تعليق: المربع الثاني: لعرض عدد العمليات السليمة (الآمنة) -->
+                <div class="stat-card">
+                    <div class="stat-icon" style="color:#05CD99; background:rgba(5, 205, 153, 0.1)">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div>
+                        <h4 style="margin:0; color:var(--text-sec)" id="txt_stat2">عمليات آمنة</h4>
+                        <h2 style="margin:0" id="val_safe">0</h2>
+                    </div>
+                </div>
+                <!-- 🌟 تعليق: المربع الثالث: لعرض عدد عمليات الاحتيال المكتشفة -->
+                <div class="stat-card">
+                    <div class="stat-icon" style="color:#EE5D50; background:rgba(238, 93, 80, 0.1)">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div>
+                        <h4 style="margin:0; color:var(--text-sec)" id="txt_stat3">احتيال مكتشف</h4>
+                        <h2 style="margin:0" id="val_fraud">0</h2>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 🌟 تعليق: مساحة مخصصة لعرض الرسم البياني (Chart.js) -->
+            <div class="chart-container">
+                <canvas id="fraudChart"></canvas>
+            </div>
+
+            <!-- 🌟 تعليق: قسم إدخال بيانات عملية جديدة لفحصها -->
+            <div class="check-section">
+                <div class="section-header">
+                    <div>
+                        <h3 style="margin:0" id="txt_input_title">فحص عملية جديدة</h3>
+                        <p style="color:var(--text-sec); margin:5px 0 0; font-size:14px;" id="txt_input_desc">
+                            قم بلصق بيانات العملية المشفرة (30 قيمة) للتحليل.
+                        </p>
+                    </div>
+                    <!-- 🌟 تعليق: زر "التعبئة العشوائية" لتوليد أرقام تجريبية لتجربة النظام -->
+                    <button type="button" onclick="fillDemoData()" class="magic-btn">
+                        <i class="fas fa-magic"></i> 
+                        <span id="txt_magic">تعبئة عشوائية</span>
+                    </button>
+                </div>
+                
+                <!-- 🌟 تعليق: المربع النصي الذي يقوم المستخدم بلصق الـ 30 قيمة بداخله -->
+                <textarea id="featuresInput" placeholder="0.12, -1.34, 0.55, ..."></textarea>
+                
+                <!-- 🌟 تعليق: الزر الرئيسي لإرسال البيانات للذكاء الاصطناعي لفحصها -->
+                <button class="action-btn" onclick="predictFraud()" id="txt_btn">
+                    🚀 تحليل الآن
+                </button>
+            </div>
+        </div>
+
+        <!-- 🌟 تعليق: ===================== صفحة السجل (History) ===================== -->
+        <div id="history-page" class="page-section">
+            <h3 style="margin-bottom:20px" id="txt_history_title">سجل العمليات المفحوصة</h3>
+            
+            <!-- 🌟 تعليق: جدول لعرض العمليات السابقة -->
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <!-- 🌟 تعليق: عناوين أعمدة الجدول -->
+                        <th id="txt_tab_num">#</th>
+                        <th id="txt_tab_time">الوقت</th>
+                        <th id="txt_tab_status">الحالة</th>
+                        <th id="txt_tab_details">التفاصيل</th>
+                    </tr>
+                </thead>
+                <!-- 🌟 تعليق: جسم الجدول، سيتم ملؤه تلقائياً بالبيانات من الجافاسكريبت -->
+                <tbody id="historyTableBody">
+                </tbody>
+            </table>
+            
+            <!-- 🌟 تعليق: نص يظهر في حال كان الجدول فارغاً ولا توجد بيانات -->
+            <p id="txt_no_data" style="text-align:center; color:var(--text-sec); margin-top:20px;">
+                لا توجد عمليات مسجلة بعد.
+            </p>
+        </div>
+
+        <!-- 🌟 تعليق: ===================== صفحة الإعدادات (Settings) ===================== -->
+        <div id="settings-page" class="page-section">
+            <h3 style="margin-bottom:20px" id="txt_settings_title">إعدادات النظام</h3>
+            
+            <div class="check-section">
+                <p id="txt_settings_desc">خيارات التحكم في البيانات:</p>
+                <!-- 🌟 تعليق: زر خطر (أحمر) لمسح جميع السجلات من قاعدة البيانات -->
+                <button class="action-btn" style="background:#EE5D50;" onclick="clearHistory()">
+                    🗑️ <span id="txt_clear_btn">مسح جميع السجلات</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🌟 تعليق: ===================== الشاشة المنبثقة للتفاصيل (Modal) ===================== -->
+    <!-- 🌟 تعليق: هذه الشاشة تكون مخفية، وتظهر فقط عند الضغط على أيقونة العين في السجل لعرض الـ 30 قيمة -->
+    <div id="detailsModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; 
+    width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5);">
+        <div class="modal-content" style="background-color: var(--card-bg);
+          margin: 10% auto; padding: 20px; border-radius: 12px; width: 80%;
+           max-width: 600px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+            <div style="display: flex; justify-content: space-between; align-items: center; 
+             border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 20px;">
+                <h3 style="margin: 0;" id="txt_modal_title">تفاصيل العملية</h3>
+                <!-- 🌟 تعليق: زر إغلاق الشاشة المنبثقة (علامة الـ X) -->
+                <span class="close" onclick="closeDetailsModal()" style="color: var(--text-sec); 
+                 font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+            </div>
+            <!-- 🌟 تعليق: المساحة التي سيتم عرض القيم الرقمية للعملية بداخلها -->
+            <div id="modalDetailsContent" style="color: var(--text-main); font-size: 14px; line-height: 1.6; word-wrap: break-word;">
+                </div>
+        </div>
+    </div>
+
+    <!-- 🌟 تعليق: استدعاء ملف الجافاسكريبت (script.js) لتشغيل منطق الصفحة والأزرار -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

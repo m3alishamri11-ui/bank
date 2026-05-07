@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bank Staff Login</title>
+    
+    <style>
+        /* تصميم الصفحة بالكامل (الخط، التوسيط، والمسافة من الأعلى) */
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            margin-top: 100px; 
+        }
+        
+        /* تصميم "مربع تسجيل الدخول" (الحدود، الحجم، والزوايا الدائرية) */
+        .login-box { 
+            border: 1px solid #ccc; 
+            padding: 30px; 
+            width: 300px; 
+            margin: auto; 
+            border-radius: 10px; 
+        }
+        
+        /* تصميم "مربعات إدخال النص" (اليوزر والباسورد) */
+        input { 
+            margin: 10px 0; 
+            padding: 10px; 
+            width: 90%; 
+        }
+        
+        /* تصميم "زر الدخول" (اللون الأزرق، الخط الأبيض، وشكل المؤشر) */
+        button { 
+            padding: 10px; 
+            width: 95%; 
+            background-color: #0056b3; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+        }
+        
+        /* تصميم "رسالة الخطأ" (تظهر باللون الأحمر إذا كان الباسورد غلط) */
+        .error-message { 
+            color: #d9534f; 
+            font-size: 14px; 
+            margin-bottom: 15px; 
+            font-weight: bold; 
+            background-color: #fdf7f7; 
+            padding: 10px; 
+            border-radius: 5px; 
+            border: 1px solid #d9534f;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-box">
+        <h2 style="color: #0056b3;">Bank Staff Login</h2>
+        
+        {% if error %}
+            <div class="error-message">❌ {{ error }}</div>
+        {% endif %}
+
+        <form action="/login" method="POST">
+            <input type="text" name="username" placeholder="Username / Staff ID" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+
+</body>
+</html>
